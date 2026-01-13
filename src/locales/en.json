@@ -1,0 +1,88 @@
+{
+  "app": {
+    "title": "Forest Shuffle: Dartmoor Solo Assistant",
+    "subtitle": "Solo Mode Companion App"
+  },
+  "setup": {
+    "title": "Game Setup",
+    "selectChallenge": "Select Challenge",
+    "selectDifficulty": "Select Difficulty",
+    "bronze": "Bronze",
+    "silver": "Silver",
+    "gold": "Gold",
+    "startGame": "Start Game",
+    "cave3Reminder": "Place Cave 3 card in front of you before starting",
+    "specialSetup": "Special Setup",
+    "adderReminder": "Start with a random Adder card in your hand"
+  },
+  "play": {
+    "title": "Anna's Turn",
+    "round": "Round",
+    "remainingCards": "Remaining Cards",
+    "currentAction": "Current Action",
+    "step1": "Add {{count}} cards from deck to clearing",
+    "step2": "Remove {{count}} cards from clearing ({{direction}})",
+    "step3": "Remove 1 card from top of deck",
+    "leftToRight": "left to right",
+    "rightToLeft": "right to left",
+    "nextAction": "Next Action",
+    "winterCard": "Winter Card Drawn",
+    "viewHistory": "Action Log",
+    "noMoreCards": "Deck is empty. Reshuffling discarded cards."
+  },
+  "scoring": {
+    "title": "Scoring",
+    "totalScore": "Total Score",
+    "moors": "Number of Moors",
+    "moorsRequired": "Number of Moors (Required)",
+    "blackTailedGodwit": "Black-Tailed Godwit",
+    "blackTailedGodwitCount": "Black-Tailed Godwit Count",
+    "blackTailedGodwitNote": "Scores 0 points if less than 6 moors",
+    "dartmoorPony": "Dartmoor Pony",
+    "dartmoorPonyCount": "Dartmoor Pony Count",
+    "dartmoorPonyNote": "Scores 5 points (instead of 15) if less than 8 moors",
+    "goalMet": "Challenge Goal Achieved",
+    "goalNotMet": "Challenge Goal Not Met",
+    "calculate": "Calculate Score",
+    "victory": "Victory!",
+    "defeat": "Defeat",
+    "victoryMessage": "Congratulations! You earned the {{difficulty}} medal!",
+    "defeatMessage": "Better luck next time!",
+    "scoreRequired": "Required Score",
+    "scoreAchieved": "Achieved Score",
+    "wingedKingdomCheck": "Do you have at least 2 birds on every tree, bush, and moor?"
+  },
+  "history": {
+    "title": "Game History",
+    "noHistory": "No history yet",
+    "date": "Date",
+    "challenge": "Challenge",
+    "difficulty": "Difficulty",
+    "score": "Score",
+    "result": "Result",
+    "victory": "Victory",
+    "defeat": "Defeat",
+    "delete": "Delete",
+    "view": "View",
+    "share": "Share"
+  },
+  "certificate": {
+    "title": "Challenge Completion Certificate",
+    "challengeCompleted": "Solo Challenge Completed",
+    "score": "Score",
+    "date": "Date",
+    "saveImage": "Save Image",
+    "share": "Share"
+  },
+  "common": {
+    "back": "Back",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading..."
+  }
+}
+
+
+
