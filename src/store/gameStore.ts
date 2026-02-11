@@ -1,10 +1,14 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GameState, GamePhase, Difficulty, AutomaCard, ActionLog } from '../types'
+import { GameState, GamePhase, ActionLog } from '../types'
 import { initializeGame, getNextAutomaCard, processAutomaAction } from '../services/gameLogic'
 
 interface GameStore extends GameState {
+  playerName: string
+  playDuration: number | null  // 점수계산 페이지 이동 시 기록된 플레이 시간(초)
+  shownCardsSinceShuffle: number[]  // 마지막 섞기 이후 나온 카드 ID (순서)
   // Actions
+  setPlayerName: (name: string) => void
   startGame: (challengeId: number) => void
   nextAction: (clearingCardCount?: number) => void
   endGame: () => void
@@ -13,7 +17,7 @@ interface GameStore extends GameState {
   setPhase: (phase: GamePhase) => void
 }
 
-const initialState: GameState = {
+const initialState: GameState & { playerName: string; playDuration: number | null; shownCardsSinceShuffle: number[] } = {
   phase: 'setup',
   challengeId: null,
   difficulty: null,
@@ -22,13 +26,20 @@ const initialState: GameState = {
   currentAutomaCard: null,
   round: 1,
   actionHistory: [],
-  startTime: null
+  startTime: null,
+  playerName: '',
+  playDuration: null,
+  shownCardsSinceShuffle: []
 }
 
 export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
       ...initialState,
+
+      setPlayerName: (name: string) => {
+        set({ playerName: name })
+      },
 
       startGame: (challengeId: number) => {
         const gameInit = initializeGame()
@@ -37,7 +48,8 @@ export const useGameStore = create<GameStore>()(
           challengeId,
           difficulty: null,
           startTime: new Date().toISOString(),
-          ...gameInit
+          ...gameInit,
+          shownCardsSinceShuffle: []  // 첫 카드는 표시 시 currentAutomaCard로 포함
         })
       },
 
@@ -56,29 +68,46 @@ export const useGameStore = create<GameStore>()(
 
         // 라운드 증가 (덱이 재생성될 때)
         let newRound = state.round
-        if (state.automaDeck.length === 0 && state.automaDiscard.length > 0) {
+        const didReshuffle = state.automaDeck.length === 0 && state.automaDiscard.length > 0
+        if (didReshuffle) {
           newRound += 1
         }
+
+        // 마지막 섞기 이후 나온 카드: 재섞 시 초기화, 아니면 현재 카드 추가
+        const prevShown = state.shownCardsSinceShuffle ?? []
+        const newShownCardsSinceShuffle = didReshuffle
+          ? (card ? [card.id] : [])
+          : [...prevShown, state.currentAutomaCard.id]
 
         set({
           currentAutomaCard: card,
           automaDeck: newDeck,
           automaDiscard: newDiscard,
           round: newRound,
-          actionHistory: [...state.actionHistory, log]
+          actionHistory: [...state.actionHistory, log],
+          shownCardsSinceShuffle: newShownCardsSinceShuffle
         })
       },
 
       endGame: () => {
+        const state = get()
+        const duration = state.startTime
+          ? Math.floor((Date.now() - new Date(state.startTime).getTime()) / 1000)
+          : 0
         set({
-          phase: 'scoring'
+          phase: 'scoring',
+          playDuration: duration > 0 ? duration : null,
+          startTime: null  // 타이머 초기화
         })
       },
 
       resetGame: () => {
+        const currentPlayerName = get().playerName
         set({
           ...initialState,
-          startTime: null
+          startTime: null,
+          playDuration: null,
+          playerName: currentPlayerName
         })
       },
 
@@ -103,7 +132,10 @@ export const useGameStore = create<GameStore>()(
         currentAutomaCard: state.currentAutomaCard,
         round: state.round,
         actionHistory: state.actionHistory,
-        startTime: state.startTime
+        startTime: state.startTime,
+        playerName: state.playerName,
+        playDuration: state.playDuration,
+        shownCardsSinceShuffle: state.shownCardsSinceShuffle
       })
     }
   )

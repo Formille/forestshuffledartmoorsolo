@@ -5,13 +5,16 @@ import { SetupScreen } from './components/SetupScreen'
 import { PlayScreen } from './components/PlayScreen'
 import { ScoringScreen } from './components/ScoringScreen'
 import { HistoryScreen } from './components/HistoryScreen'
+import { VerifyScreen } from './components/VerifyScreen'
 
 function App() {
   const { t, i18n } = useTranslation()
   const phase = useGameStore(state => state.phase)
+  const playerName = useGameStore(state => state.playerName)
   const resetGame = useGameStore(state => state.resetGame)
   const setPhase = useGameStore(state => state.setPhase)
   const [showHistory, setShowHistory] = useState(false)
+  const [showVerify, setShowVerify] = useState(false)
 
   useEffect(() => {
     // 언어 설정 로드
@@ -24,8 +27,13 @@ function App() {
   const handleNavigate = (targetPhase: string) => {
     if (targetPhase === 'history') {
       setShowHistory(true)
+      setShowVerify(false)
+    } else if (targetPhase === 'verify') {
+      setShowVerify(true)
+      setShowHistory(false)
     } else if (targetPhase === 'setup') {
       setShowHistory(false)
+      setShowVerify(false)
       resetGame()
     } else if (targetPhase === 'play' && phase !== 'setup' && phase !== 'finished') {
       setShowHistory(false)
@@ -46,8 +54,15 @@ function App() {
         {/* Navigation */}
         <nav className="flex-shrink-0 z-50 bg-forest-700 text-white p-4">
           <div className="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold">Forest Shuffle: Dartmoor</h1>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-4">
+              <h1 className="text-xl font-bold">Forest Shuffle: Dartmoor</h1>
+              {playerName && (
+                <span className="text-forest-200 text-sm border-l border-forest-500 pl-4">
+                  {playerName}
+                </span>
+              )}
+            </div>
+            <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => handleNavigate('setup')}
                 className={`px-4 py-2 rounded transition-colors ${
@@ -92,6 +107,12 @@ function App() {
               >
                 {t('nav.history')}
               </button>
+              <button
+                onClick={() => handleNavigate('verify')}
+                className="bg-forest-600 hover:bg-forest-500 px-4 py-2 rounded transition-colors"
+              >
+                {t('nav.verify')}
+              </button>
             </div>
           </div>
         </nav>
@@ -102,12 +123,61 @@ function App() {
     )
   }
 
+  if (showVerify) {
+    return (
+      <div className="h-screen flex flex-col bg-forest-50 overflow-hidden">
+        <nav className="flex-shrink-0 z-50 bg-forest-700 text-white p-4">
+          <div className="max-w-6xl mx-auto flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <h1 className="text-xl font-bold">Forest Shuffle: Dartmoor</h1>
+              {playerName && (
+                <span className="text-forest-200 text-sm border-l border-forest-500 pl-4">
+                  {playerName}
+                </span>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleNavigate('setup')}
+                className="bg-forest-600 hover:bg-forest-500 px-4 py-2 rounded transition-colors"
+              >
+                {t('nav.setup')}
+              </button>
+              <button
+                onClick={() => handleNavigate('history')}
+                className="bg-forest-600 hover:bg-forest-500 px-4 py-2 rounded transition-colors"
+              >
+                {t('nav.history')}
+              </button>
+              <button
+                onClick={() => handleNavigate('verify')}
+                className="bg-forest-500 px-4 py-2 rounded transition-colors"
+              >
+                {t('nav.verify')}
+              </button>
+            </div>
+          </div>
+        </nav>
+        <div className="flex-1 overflow-y-auto">
+          <VerifyScreen onBack={() => setShowVerify(false)} />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="h-screen flex flex-col bg-forest-50 overflow-hidden">
       {/* Navigation */}
       <nav className="flex-shrink-0 z-50 bg-forest-700 text-white p-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">Forest Shuffle: Dartmoor</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-xl font-bold">Forest Shuffle: Dartmoor</h1>
+            {playerName && (
+              <span className="text-forest-200 text-sm border-l border-forest-500 pl-4">
+                {playerName}
+              </span>
+            )}
+          </div>
           <div className="flex gap-2">
             <button
               onClick={() => handleNavigate('setup')}
@@ -152,6 +222,12 @@ function App() {
               }`}
             >
               {t('nav.history')}
+            </button>
+            <button
+              onClick={() => handleNavigate('verify')}
+              className="bg-forest-600 hover:bg-forest-500 px-4 py-2 rounded transition-colors"
+            >
+              {t('nav.verify')}
             </button>
           </div>
         </div>

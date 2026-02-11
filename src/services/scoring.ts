@@ -1,60 +1,10 @@
-import { ScoreInput, Difficulty, Challenge } from '../types'
+import { Difficulty } from '../types'
 import { getChallengeById } from '../data/challenges'
 
 /**
- * 솔로 모드 전용 점수 조정
- * Black-Tailed Godwit: 습지 6개 미만 시 0점
- * Dartmoor Pony: 습지 8개 미만 시 15점 -> 5점
+ * 습지·흑꼬리도요·다트무어 포니 점수는 점수 계산 단계에서 안내문구로만 안내하며,
+ * 사용자가 총점에 직접 포함하여 입력함
  */
-export function calculateAdjustedScore(
-  baseScore: number,
-  moors: number,
-  blackTailedGodwits: number,
-  dartmoorPonies: number
-): number {
-  let adjustedScore = baseScore
-  
-  // Black-Tailed Godwit 조정 (습지 6개 미만 시 0점)
-  const godwitPointsPerCard = moors >= 6 ? 10 : 0
-  const godwitTotalPoints = blackTailedGodwits * godwitPointsPerCard
-  
-  // Dartmoor Pony 조정 (습지 8개 미만 시 15점 -> 5점)
-  const ponyPointsPerCard = moors >= 8 ? 15 : 5
-  const ponyTotalPoints = dartmoorPonies * ponyPointsPerCard
-  
-  // 기본 점수에서 Godwit와 Pony 점수를 제외하고 다시 계산
-  // (실제로는 사용자가 입력한 총점에서 조정해야 함)
-  // 여기서는 조정된 점수를 반환
-  adjustedScore = baseScore
-  
-  // 만약 baseScore에 이미 포함되어 있다면, 차이만 조정
-  // 실제 구현에서는 사용자가 입력한 점수에서 직접 조정하는 것이 더 정확함
-  // 이 함수는 검증용으로 사용
-  
-  return adjustedScore
-}
-
-/**
- * Godwit와 Pony의 실제 점수를 계산
- */
-export function calculateSpecialCardScores(
-  moors: number,
-  blackTailedGodwits: number,
-  dartmoorPonies: number
-): {
-  godwitScore: number
-  ponyScore: number
-  totalSpecialScore: number
-} {
-  const godwitScore = blackTailedGodwits * (moors >= 6 ? 10 : 0)
-  const ponyScore = dartmoorPonies * (moors >= 8 ? 15 : 5)
-  
-  return {
-    godwitScore,
-    ponyScore,
-    totalSpecialScore: godwitScore + ponyScore
-  }
-}
 
 /**
  * 점수에 따라 메달 결정

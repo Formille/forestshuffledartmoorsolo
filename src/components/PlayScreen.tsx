@@ -10,10 +10,14 @@ export function PlayScreen() {
   const {
     currentAutomaCard,
     remainingCards,
+    automaDeck,
+    automaDiscard,
+    shownCardsSinceShuffle,
     proceedToNextAction,
     finishGame
   } = useGameState()
   const startTime = useGameStore(state => state.startTime)
+  const [showEndConfirm, setShowEndConfirm] = useState(false)
   const [playTime, setPlayTime] = useState<string>('00:00')
 
   useEffect(() => {
@@ -52,45 +56,100 @@ export function PlayScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-forest-50 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-forest-800 mb-2">
-              {t('play.title')}
-            </h1>
-            <div className="flex gap-4 text-forest-600">
-              <span>
-                {t('play.remainingCards')}: {remainingCards}
-              </span>
-              <span>
-                {t('play.playTime')}: {playTime}
+    <div className="min-h-screen bg-forest-50 flex flex-col">
+      {/* 스크롤 가능한 콘텐츠 영역 */}
+      <div className="flex-1 overflow-y-auto py-8 px-4 pb-48">
+        <div className="max-w-2xl mx-auto">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-forest-800 mb-2">
+                {t('play.title')}
+              </h1>
+              <div className="flex gap-4 text-forest-600">
+                <span>
+                  {t('play.remainingCards')}: {remainingCards}
+                </span>
+                <span>
+                  {t('play.playTime')}: {playTime}
+                </span>
+              </div>
+            </div>
+            <LanguageSwitcher />
+          </div>
+
+          {/* Current Action Display */}
+          <section className="animate-fade-in">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold text-forest-800">
+                {t('play.currentAction')}
+              </h2>
+              <span className="text-forest-600 font-medium bg-forest-100 px-3 py-1 rounded-lg">
+                {t('play.cardId')}: {currentAutomaCard.id}
               </span>
             </div>
-          </div>
-          <LanguageSwitcher />
+            <AutomaActionDisplay key={currentAutomaCard.id} card={currentAutomaCard} />
+          </section>
         </div>
+      </div>
 
-        {/* Current Action Display */}
-        <section className="mb-8 animate-fade-in">
-          <h2 className="text-2xl font-semibold text-forest-800 mb-4">
-            {t('play.currentAction')}
-          </h2>
-          <AutomaActionDisplay card={currentAutomaCard} />
-        </section>
-
-        {/* Action Buttons */}
-        <div className="space-y-4">
+      {/* 화면 하단 고정: 나온 카드/남은 카드 + 버튼 영역 */}
+      <div className="fixed bottom-0 left-0 right-0 bg-forest-50 border-t border-forest-200 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        {/* 나온 카드 (이번 섞기 이후) / 남은 카드 ID 목록 - 하단 앵커 */}
+        <div className="max-w-2xl mx-auto px-4 pt-4">
+          <section className="card bg-forest-50 border-2 border-forest-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-sm font-semibold text-forest-700 mb-2">
+                  {t('play.shownCards')}
+                </h3>
+                <p className="text-forest-600 text-sm break-all">
+                  {(() => {
+                    const list = [...shownCardsSinceShuffle, currentAutomaCard?.id].filter(Boolean)
+                    return list.length > 0 ? list.join(', ') : '-'
+                  })()}
+                </p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-forest-700 mb-2">
+                  {t('play.remainingCardsIds')}
+                </h3>
+                <div className="grid grid-cols-5 gap-1.5">
+                  {(() => {
+                    const shownIds = new Set([
+                      ...automaDiscard.map((c) => c.id),
+                      currentAutomaCard?.id
+                    ].filter(Boolean))
+                    return Array.from({ length: 20 }, (_, i) => i + 1).map((id) => {
+                      const isShown = shownIds.has(id)
+                      return (
+                        <span
+                          key={id}
+                          className={`text-center py-2 px-1 rounded text-sm font-medium ${
+                            isShown
+                              ? 'text-forest-400 opacity-40'
+                              : 'text-forest-700 bg-forest-100'
+                          }`}
+                        >
+                          {id}
+                        </span>
+                      )
+                    })
+                  })()}
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div className="max-w-2xl mx-auto p-4 pb-6 space-y-3">
           <button
             onClick={() => proceedToNextAction()}
             className="btn-primary w-full text-xl py-4"
           >
             {t('play.nextAction')}
           </button>
-          
           <button
-            onClick={finishGame}
+            onClick={() => setShowEndConfirm(true)}
             className="w-full text-xl py-4 rounded-lg font-semibold 
                        bg-gradient-to-br from-sky-50 to-white 
                        border-2 border-sky-200 
@@ -106,6 +165,34 @@ export function PlayScreen() {
           </button>
         </div>
       </div>
+
+      {/* 게임 종료 확인 팝업 */}
+      {showEndConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="card bg-white max-w-sm w-full">
+            <p className="text-lg font-semibold text-forest-800 mb-6 text-center">
+              {t('play.gameEndConfirm')}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowEndConfirm(false)}
+                className="btn-secondary flex-1"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={() => {
+                  setShowEndConfirm(false)
+                  finishGame()
+                }}
+                className="btn-primary flex-1"
+              >
+                {t('common.confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

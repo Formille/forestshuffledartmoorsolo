@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
   // 초기값을 함수로 받아서 한 번만 실행되도록

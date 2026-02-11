@@ -1,5 +1,4 @@
 import { useGameStore } from '../store/gameStore'
-import { Difficulty } from '../types'
 
 export function useGameState() {
   const {
@@ -11,6 +10,7 @@ export function useGameState() {
     currentAutomaCard,
     round,
     actionHistory,
+    shownCardsSinceShuffle,
     startGame,
     nextAction,
     endGame,
@@ -42,6 +42,7 @@ export function useGameState() {
     currentAutomaCard,
     round,
     actionHistory,
+    shownCardsSinceShuffle: shownCardsSinceShuffle ?? [],
     startNewGame,
     proceedToNextAction,
     finishGame,

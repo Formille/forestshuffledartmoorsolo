@@ -45,8 +45,12 @@ export function processAutomaAction(
   card: AutomaCard,
   clearingCardCount: number = 0 // 공터에 있는 카드 수 (실제 게임에서는 추적 필요)
 ): ActionLog {
-  const actualRemove = Math.min(card.removeCount, clearingCardCount)
-  
+  const isClearingRemove = card.removeDirection === 'left_to_right' || card.removeDirection === 'right_to_left'
+  const actualRemove = isClearingRemove
+    ? Math.min(card.removeCount, clearingCardCount)
+    : 0
+  const burnCount = card.burnCount ?? 0
+
   return {
     id: `action-${Date.now()}-${Math.random()}`,
     timestamp: new Date().toISOString(),
@@ -55,7 +59,7 @@ export function processAutomaAction(
       add: card.addCount,
       remove: actualRemove,
       direction: card.removeDirection,
-      burn: card.burnTopCard
+      burn: burnCount
     }
   }
 }

@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGameState } from '../hooks/useGameState'
+import { useGameStore } from '../store/gameStore'
 import { ScoreInputForm } from './ScoreInputForm'
 import { ScoreInput, Difficulty } from '../types'
-import { checkVictory, determineMedal } from '../services/scoring'
+import { checkVictory } from '../services/scoring'
 import { getChallengeById } from '../data/challenges'
 import { saveGameHistory } from '../services/history'
 import { LanguageSwitcher } from './LanguageSwitcher'
@@ -18,6 +19,8 @@ export function ScoringScreen({ onGoToHistory }: ScoringScreenProps) {
   const { t, i18n } = useTranslation()
   const lang = i18n.language as 'ko' | 'en'
   const { challengeId, clearGame } = useGameState()
+  const playDuration = useGameStore(state => state.playDuration)
+  const playerName = useGameStore(state => state.playerName)
   const [result, setResult] = useState<{
     isVictory: boolean
     score: number
@@ -48,12 +51,18 @@ export function ScoringScreen({ onGoToHistory }: ScoringScreenProps) {
     const { isVictory, medal } = checkVictory(adjustedScore, challengeId, input.goalMet)
     const requiredScore = medal ? challenge.minScore[medal] : null
 
+    const completedAt = Math.floor(Date.now() / 1000)
+    const duration = playDuration ?? 0
+
     const savedHistory = saveGameHistory({
       challengeId,
       difficulty: medal || 'bronze', // 메달이 없어도 기록을 위해 기본값 사용
       score: adjustedScore,
       goalMet: input.goalMet,
-      isVictory
+      isVictory,
+      playerName: playerName || undefined,
+      duration: duration > 0 ? duration : undefined,
+      completedAt
     })
 
     setResult({
@@ -64,9 +73,7 @@ export function ScoringScreen({ onGoToHistory }: ScoringScreenProps) {
       history: savedHistory
     })
 
-    if (isVictory) {
-      setShowCertificate(true)
-    }
+    setShowCertificate(true)
   }
 
   const handleNewGame = () => {
@@ -101,7 +108,6 @@ export function ScoringScreen({ onGoToHistory }: ScoringScreenProps) {
             <ScoreInputForm
               onSubmit={handleScoreSubmit}
               challengeId={challengeId}
-              onSaveAndGoToHistory={onGoToHistory}
             />
           </section>
         )}
@@ -162,14 +168,12 @@ export function ScoringScreen({ onGoToHistory }: ScoringScreenProps) {
             </div>
 
             <div className="mt-6 flex gap-4">
-              {result.isVictory && (
-                <button
-                  onClick={() => setShowCertificate(true)}
-                  className="btn-primary flex-1"
-                >
-                  {t('certificate.title')}
-                </button>
-              )}
+              <button
+                onClick={() => setShowCertificate(true)}
+                className="btn-primary flex-1"
+              >
+                {t('certificate.title')}
+              </button>
               <button
                 onClick={handleNewGame}
                 className="btn-secondary flex-1"

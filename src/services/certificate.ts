@@ -1,14 +1,16 @@
-import { GameHistory, Difficulty } from '../types'
+import { GameHistory } from '../types'
 import { getChallengeById } from '../data/challenges'
+import { historiesToVerificationData, encodeToQRDataUrl } from './verification'
+import { getGameHistory } from './history'
 
 /**
- * Canvas API를 사용한 인증 이미지 생성
+ * Canvas API를 사용한 인증 이미지 생성 (QR 포함)
  */
 export function generateCertificate(
   history: GameHistory,
   language: 'ko' | 'en' = 'ko'
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const canvas = document.createElement('canvas')
     canvas.width = 1200
     canvas.height = 800
@@ -104,10 +106,33 @@ export function generateCertificate(
       600
     )
 
-    // Base64로 변환
+    // QR 코드 (gzip 압축된 인증 데이터 - 누적된 전체 플레이 기록 포함)
     try {
-      const dataUrl = canvas.toDataURL('image/png')
-      resolve(dataUrl)
+      const allHistories = getGameHistory()
+      const toTimestamp = (h: GameHistory) =>
+        h.completedAt ?? Math.floor(new Date(h.date).getTime() / 1000)
+      const sortedHistories = [...allHistories].sort(
+        (a, b) => toTimestamp(a) - toTimestamp(b)
+      )
+      const verificationData = historiesToVerificationData(
+        sortedHistories,
+        history.playerName ?? '',
+        language
+      )
+      const qrDataUrl = await encodeToQRDataUrl(verificationData)
+
+      const qrSize = 160
+      const qrX = canvas.width - qrSize - 40
+      const qrY = canvas.height - qrSize - 40
+
+      const qrImg = new Image()
+      qrImg.onload = () => {
+        ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
+        const dataUrl = canvas.toDataURL('image/png')
+        resolve(dataUrl)
+      }
+      qrImg.onerror = () => reject(new Error('QR image load failed'))
+      qrImg.src = qrDataUrl
     } catch (error) {
       reject(error)
     }

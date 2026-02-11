@@ -1,11 +1,15 @@
-import { GameHistory, Difficulty } from '../types'
+import { GameHistory } from '../types'
 
 const STORAGE_KEY = 'dartmoor-game-history'
 
 /**
  * 게임 기록 저장
  */
-export function saveGameHistory(history: Omit<GameHistory, 'id' | 'date'>): GameHistory {
+export function saveGameHistory(history: Omit<GameHistory, 'id' | 'date'> & {
+  playerName?: string
+  duration?: number
+  completedAt?: number
+}): GameHistory {
   const gameHistory: GameHistory = {
     id: `game-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     date: new Date().toISOString().split('T')[0],

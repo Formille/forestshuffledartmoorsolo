@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { getChallengeById } from '../data/challenges'
-import { getGameHistory, deleteGameHistory, GameHistory } from '../services/history'
+import { getGameHistory, deleteGameHistory } from '../services/history'
+import { GameHistory } from '../types'
 import { useState, useEffect } from 'react'
 import { LanguageSwitcher } from './LanguageSwitcher'
 

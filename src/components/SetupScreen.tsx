@@ -1,17 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { challenges } from '../data/challenges'
 import { ChallengeCard } from './ChallengeCard'
 import { useGameState } from '../hooks/useGameState'
+import { useGameStore } from '../store/gameStore'
 import { Difficulty } from '../types'
 import { LanguageSwitcher } from './LanguageSwitcher'
 
 export function SetupScreen() {
-  const { t, i18n } = useTranslation()
-  const lang = i18n.language as 'ko' | 'en'
+  const { t } = useTranslation()
   const { startNewGame } = useGameState()
+  const storedPlayerName = useGameStore(state => state.playerName)
+  const setPlayerName = useGameStore(state => state.setPlayerName)
+  const [playerNameInput, setPlayerNameInput] = useState(storedPlayerName)
+  const [saveFeedback, setSaveFeedback] = useState(false)
   
   const [selectedChallengeId, setSelectedChallengeId] = useState<number | null>(null)
+
+  useEffect(() => {
+    setPlayerNameInput(storedPlayerName)
+  }, [storedPlayerName])
+
+  const handleSavePlayerName = () => {
+    setPlayerName(playerNameInput)
+    setSaveFeedback(true)
+    setTimeout(() => setSaveFeedback(false), 1500)
+  }
 
   const selectedChallenge = selectedChallengeId
     ? challenges.find(c => c.id === selectedChallengeId)
@@ -36,6 +50,28 @@ export function SetupScreen() {
           </div>
           <LanguageSwitcher />
         </div>
+
+        {/* Player Name */}
+        <section className="mb-8">
+          <h2 className="text-2xl font-semibold text-forest-800 mb-4">
+            {t('setup.playerName')}
+          </h2>
+          <div className="flex gap-2 items-center flex-wrap">
+            <input
+              type="text"
+              value={playerNameInput}
+              onChange={(e) => setPlayerNameInput(e.target.value)}
+              placeholder={t('setup.playerNamePlaceholder')}
+              className="flex-1 min-w-[200px] px-4 py-2 border-2 border-forest-300 rounded-lg focus:border-forest-500 focus:outline-none"
+            />
+            <button
+              onClick={handleSavePlayerName}
+              className="btn-secondary px-6 py-2"
+            >
+              {saveFeedback ? t('setup.saved') : t('setup.save')}
+            </button>
+          </div>
+        </section>
 
         {/* Challenge Selection */}
         <section className="mb-8 animate-fade-in">

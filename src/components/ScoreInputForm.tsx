@@ -1,49 +1,31 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScoreInput } from '../types'
-import { calculateSpecialCardScores } from '../services/scoring'
 import { getChallengeById } from '../data/challenges'
 
 interface ScoreInputFormProps {
   onSubmit: (input: ScoreInput, adjustedScore: number) => void
   challengeId: number
-  onSaveAndGoToHistory?: () => void
 }
 
-export function ScoreInputForm({ onSubmit, challengeId, onSaveAndGoToHistory }: ScoreInputFormProps) {
+export function ScoreInputForm({ onSubmit, challengeId }: ScoreInputFormProps) {
   const { t, i18n } = useTranslation()
   const lang = i18n.language as 'ko' | 'en'
   
   const challenge = getChallengeById(challengeId)
   
   const [totalScore, setTotalScore] = useState<number>(0)
-  const [moors, setMoors] = useState<number>(0)
-  const [blackTailedGodwits, setBlackTailedGodwits] = useState<number>(0)
-  const [dartmoorPonies, setDartmoorPonies] = useState<number>(0)
   const [goalMet, setGoalMet] = useState<boolean>(false)
-
-  // 특수 카드 점수 계산이 필요한 도전과제 확인
-  const needsSpecialCards = challengeId === 2 || challengeId === 6 || challengeId === 7 || 
-                            blackTailedGodwits > 0 || dartmoorPonies > 0
-  
-  // 습지 개수가 필요한 도전과제 확인
-  const needsMoors = challengeId === 2 || challengeId === 6 || needsSpecialCards
-
-  const specialScores = calculateSpecialCardScores(moors, blackTailedGodwits, dartmoorPonies)
-  const adjustedScore = totalScore + specialScores.totalSpecialScore
 
   const handleSubmit = () => {
     const input: ScoreInput = {
       totalScore,
-      moors: needsMoors ? moors : 0,
-      blackTailedGodwits: needsSpecialCards ? blackTailedGodwits : 0,
-      dartmoorPonies: needsSpecialCards ? dartmoorPonies : 0,
+      moors: 0,
+      blackTailedGodwits: 0,
+      dartmoorPonies: 0,
       goalMet
     }
-    onSubmit(input, adjustedScore)
-    if (onSaveAndGoToHistory) {
-      onSaveAndGoToHistory()
-    }
+    onSubmit(input, totalScore)
   }
 
   return (
@@ -59,17 +41,6 @@ export function ScoreInputForm({ onSubmit, challengeId, onSaveAndGoToHistory }: 
               <p className="text-sm text-forest-700 font-semibold mb-2">
                 {challenge.description[lang]}
               </p>
-              {/* Challenge-specific checks */}
-              {challengeId === 2 && (
-                <div className="flex items-center gap-2 text-sm mt-2">
-                  <span className={moors >= 10 ? 'text-green-600 font-bold text-lg' : 'text-moor-600 text-lg'}>
-                    {moors >= 10 ? '✓' : '○'}
-                  </span>
-                  <span className={moors >= 10 ? 'text-green-700 font-semibold' : 'text-forest-600'}>
-                    습지 카드 {moors}장 / 최소 10장 필요
-                  </span>
-                </div>
-              )}
               {(challengeId === 6 || challengeId === 7) && (
                 <p className="text-sm text-moor-700 mt-2 font-semibold">
                   ⚠ {challenge.description[lang]} 조건을 충족했는지 확인하세요
@@ -82,6 +53,20 @@ export function ScoreInputForm({ onSubmit, challengeId, onSaveAndGoToHistory }: 
           </div>
         </div>
       )}
+
+      {/* 흑꼬리도요·다트무어 포니 점수 안내 */}
+      <div className="card bg-moor-50 border-2 border-moor-200">
+        <h3 className="font-bold text-moor-800 mb-2">
+          {t('scoring.specialCardsGuideTitle')}
+        </h3>
+        <ul className="text-sm text-moor-700 space-y-1">
+          <li>• {t('scoring.blackTailedGodwit')}: {t('scoring.blackTailedGodwitNote')}</li>
+          <li>• {t('scoring.dartmoorPony')}: {t('scoring.dartmoorPonyNote')}</li>
+        </ul>
+        <p className="text-xs text-moor-600 mt-2 italic">
+          {t('scoring.specialCardsGuideNote')}
+        </p>
+      </div>
 
       {/* Goal Met Checkbox - Second */}
       <div>
@@ -119,7 +104,7 @@ export function ScoreInputForm({ onSubmit, challengeId, onSaveAndGoToHistory }: 
         )}
       </div>
 
-      {/* Total Score - Third */}
+      {/* Total Score */}
       <div>
         <label className="block text-forest-800 font-semibold mb-2">
           {t('scoring.totalScore')}
@@ -131,81 +116,19 @@ export function ScoreInputForm({ onSubmit, challengeId, onSaveAndGoToHistory }: 
           className="w-full px-4 py-3 rounded-lg border-2 border-forest-300 focus:border-forest-500 focus:outline-none text-lg"
           min="0"
         />
+        <p className="text-xs text-forest-600 mt-1">
+          {t('scoring.totalScoreNote')}
+        </p>
       </div>
 
-      {/* Moors - Only for challenges that need it */}
-      {needsMoors && (
-        <div>
-          <label className="block text-forest-800 font-semibold mb-2">
-            {t('scoring.moorsRequired')} *
-          </label>
-          <input
-            type="number"
-            value={moors || ''}
-            onChange={(e) => setMoors(Number(e.target.value))}
-            className="w-full px-4 py-3 rounded-lg border-2 border-forest-300 focus:border-forest-500 focus:outline-none text-lg"
-            min="0"
-            required
-          />
-        </div>
-      )}
-
-      {/* Black-Tailed Godwit - Only for challenges that need special cards */}
-      {needsSpecialCards && (
-        <div>
-          <label className="block text-forest-800 font-semibold mb-2">
-            {t('scoring.blackTailedGodwit')}
-          </label>
-          <input
-            type="number"
-            value={blackTailedGodwits || ''}
-            onChange={(e) => setBlackTailedGodwits(Number(e.target.value))}
-            className="w-full px-4 py-3 rounded-lg border-2 border-forest-300 focus:border-forest-500 focus:outline-none text-lg mb-2"
-            min="0"
-          />
-          <p className="text-sm text-forest-600">
-            {t('scoring.blackTailedGodwitNote')}
-          </p>
-          {blackTailedGodwits > 0 && moors > 0 && (
-            <p className="text-sm text-moor-700 mt-1">
-              점수: {specialScores.godwitScore}점
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* Dartmoor Pony - Only for challenges that need special cards */}
-      {needsSpecialCards && (
-        <div>
-          <label className="block text-forest-800 font-semibold mb-2">
-            {t('scoring.dartmoorPony')}
-          </label>
-          <input
-            type="number"
-            value={dartmoorPonies || ''}
-            onChange={(e) => setDartmoorPonies(Number(e.target.value))}
-            className="w-full px-4 py-3 rounded-lg border-2 border-forest-300 focus:border-forest-500 focus:outline-none text-lg mb-2"
-            min="0"
-          />
-          <p className="text-sm text-forest-600">
-            {t('scoring.dartmoorPonyNote')}
-          </p>
-          {dartmoorPonies > 0 && moors > 0 && (
-            <p className="text-sm text-moor-700 mt-1">
-              점수: {specialScores.ponyScore}점
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* Adjusted Score Display with Medal Requirements */}
+      {/* Score Display with Medal Requirements */}
       <div className="card bg-forest-50 border-2 border-forest-300">
         <div className="flex justify-between items-center mb-3">
           <span className="font-semibold text-forest-800">
             {t('scoring.scoreAchieved')}:
           </span>
           <span className="text-2xl font-bold text-forest-600">
-            {adjustedScore}점
+            {totalScore}점
           </span>
         </div>
         {/* Medal Score Requirements - Only show if goal is met */}
@@ -241,8 +164,7 @@ export function ScoreInputForm({ onSubmit, challengeId, onSaveAndGoToHistory }: 
       {/* Save Button */}
       <button
         onClick={handleSubmit}
-        disabled={needsMoors && moors === 0}
-        className="btn-primary w-full text-xl py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-primary w-full text-xl py-4"
       >
         {t('scoring.saveRecord')}
       </button>
