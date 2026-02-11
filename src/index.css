@@ -80,5 +80,141 @@
   .animate-slide-in {
     animation: slideIn 0.3s ease-out;
   }
+
+  /* 공터 카드 제거 애니메이션: 페이드아웃 → 0.1s 복귀 → 1s 대기 → 1s 페이드인 → 0.5s 대기 (3장 기준: 3.7s) */
+  @keyframes removeCardFadeOut {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    13.5% {
+      opacity: 0;
+      transform: translate(0.5rem, -0.5rem);
+    }
+    16.2% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    43.2% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    61.01% {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+
+  /* 왼쪽에서 제거: 왼쪽 위로 페이드아웃 */
+  @keyframes removeCardFadeOutLeft {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    13.5% {
+      opacity: 0;
+      transform: translate(-0.5rem, -0.5rem);
+    }
+    16.2% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    43.2% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    61.01% {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+
+  /* 덱 맨 위 카드 소각 애니메이션: 불타서 사라짐 → 0.1s 복귀 → 1s 대기 → 1s 페이드인 → 0.5s 대기 */
+  @keyframes burnCardFadeOut {
+    0% {
+      opacity: 1;
+      transform: scale(1) translate(0, 0);
+    }
+    19% {
+      opacity: 0;
+      transform: scale(1.15) translate(0, -0.4rem);
+    }
+    23% {
+      opacity: 0;
+      transform: scale(1) translate(0, 0);
+    }
+    61% {
+      opacity: 0;
+      transform: scale(1) translate(0, 0);
+    }
+    61.01% {
+      opacity: 1;
+      transform: scale(1) translate(0, 0);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translate(0, 0);
+    }
+  }
+
+  /* 공터 추가: 덱에서 카드 꺼내서 → 오른쪽에 순서대로 도착 (--add-card-offset으로 순서별 초기화 위치) */
+  @keyframes addCardToClearing {
+    0% {
+      opacity: 1;
+      transform: translateX(var(--add-card-offset, -7rem)) scale(1);
+    }
+    15% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    45% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    45.01% {
+      opacity: 1;
+      transform: translateX(var(--add-card-offset, -7rem)) scale(1);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(var(--add-card-offset, -7rem)) scale(1);
+    }
+  }
+
+  /* 덱 맨 위 카드들: 대각선 겹쳐진 카드가 사라지는 연출 */
+  @keyframes burnStackFadeOut {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    8% {
+      opacity: 0;
+      transform: translate(-0.2rem, -0.7rem) scale(0.95);
+    }
+    23% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    61% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    61.01% {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
 }
 
