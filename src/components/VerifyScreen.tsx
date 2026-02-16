@@ -4,7 +4,6 @@ import jsQR from 'jsqr'
 import { decompress } from '../services/verification'
 import { VerificationData } from '../types'
 import { challenges, getChallengeById } from '../data/challenges'
-import { MissionResultThumbnail } from './MissionResultThumbnail'
 
 interface VerifyScreenProps {
   onBack: () => void
@@ -135,10 +134,19 @@ export function VerifyScreen({ onBack }: VerifyScreenProps) {
     stopCamera()
   }
 
-  const medalLabel = (code: number) => {
-    if (code === 0) return lang === 'ko' ? '실패' : 'Fail'
-    const labels = lang === 'ko' ? ['', '동메달', '은메달', '금메달'] : ['', 'Bronze', 'Silver', 'Gold']
-    return labels[code] ?? ''
+  const medalIcon = (code: number) => (code === 0 ? '❌' : ['', '🥉', '🥈', '🥇'][code] ?? '')
+
+  const formatPlayedAt = (timestampSec: number, durationSec: number) => {
+    const d = new Date(timestampSec * 1000)
+    const yy = String(d.getFullYear()).slice(-2)
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    const hh = String(d.getHours()).padStart(2, '0')
+    const min = String(d.getMinutes()).padStart(2, '0')
+    const h = Math.floor(durationSec / 3600)
+    const m = Math.floor((durationSec % 3600) / 60)
+    const durationStr = `${h}:${String(m).padStart(2, '0')}`
+    return `${yy}. ${mm}. ${dd}. ${hh}:${min} (${lang === 'ko' ? '플레이 시간 ' : ''}${durationStr})`
   }
 
   return (
@@ -275,25 +283,16 @@ export function VerifyScreen({ onBack }: VerifyScreenProps) {
             <div>
               <p className="text-forest-600 mb-2">{t('verify.records')}</p>
               <div className="overflow-x-auto rounded-lg border border-forest-200">
-                <table className="w-full text-left">
+                <table className="w-full text-left table-fixed sm:table-auto min-w-0">
                   <thead>
                     <tr className="bg-forest-100 border-b border-forest-200">
-                      <th className="px-4 py-3 font-semibold text-forest-800 w-16">
-                        {lang === 'ko' ? '' : ''}
-                      </th>
-                      <th className="px-4 py-3 font-semibold text-forest-800">
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 font-semibold text-forest-800 text-xs sm:text-base w-[35%] sm:w-auto min-w-0">
                         {lang === 'ko' ? '도전과제' : 'Challenge'}
                       </th>
-                      <th className="px-4 py-3 font-semibold text-forest-800">
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 font-semibold text-forest-800 text-xs sm:text-base w-[15%] sm:w-auto whitespace-nowrap">
                         {t('scoring.score')}
                       </th>
-                      <th className="px-4 py-3 font-semibold text-forest-800">
-                        {t('verify.medal')}
-                      </th>
-                      <th className="px-4 py-3 font-semibold text-forest-800">
-                        {t('verify.duration')}
-                      </th>
-                      <th className="px-4 py-3 font-semibold text-forest-800">
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 font-semibold text-forest-800 text-xs sm:text-base w-[50%] sm:w-auto min-w-0">
                         {t('verify.playedAt')}
                       </th>
                     </tr>
@@ -306,31 +305,17 @@ export function VerifyScreen({ onBack }: VerifyScreenProps) {
                           key={i}
                           className="border-b border-forest-100 last:border-b-0 hover:bg-forest-50/50"
                         >
-                          <td className="px-2 py-2 align-middle">
-                            <MissionResultThumbnail
-                              missionId={rec.c[0]}
-                              medalCode={rec.c[2]}
-                              width={64}
-                              height={48}
-                            />
-                          </td>
-                          <td className="px-4 py-3 text-forest-800 font-medium">
+                          <td className="px-2 sm:px-4 py-2 sm:py-3 text-forest-800 font-medium text-xs sm:text-base truncate">
                             {challenge
                               ? `${challenge.id}. ${challenge.title[lang]}`
                               : `Challenge ${rec.c[0]}`}
                           </td>
-                          <td className="px-4 py-3 text-forest-700">
+                          <td className="px-2 sm:px-4 py-2 sm:py-3 text-forest-700 text-xs sm:text-base whitespace-nowrap">
+                            <span className="mr-1">{medalIcon(rec.c[2])}</span>
                             {rec.c[1]}
                           </td>
-                          <td className="px-4 py-3 text-forest-700">
-                            {medalLabel(rec.c[2])}
-                            {rec.c[2] > 0 && ` ${['', '🥉', '🥈', '🥇'][rec.c[2]]}`}
-                          </td>
-                          <td className="px-4 py-3 text-forest-700">
-                            {Math.floor(rec.d / 60)}{lang === 'ko' ? '분 ' : ` ${t('verify.minutes')} `}{rec.d % 60}{lang === 'ko' ? '초' : ` ${t('verify.seconds')}`}
-                          </td>
-                          <td className="px-4 py-3 text-forest-700 text-sm">
-                            {new Date(rec.t * 1000).toLocaleString(lang === 'ko' ? 'ko-KR' : 'en-US')}
+                          <td className="px-2 sm:px-4 py-2 sm:py-3 text-forest-700 text-xs sm:text-base whitespace-nowrap">
+                            {formatPlayedAt(rec.t, rec.d)}
                           </td>
                         </tr>
                       )
