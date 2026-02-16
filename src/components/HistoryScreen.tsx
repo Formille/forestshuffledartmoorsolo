@@ -89,17 +89,15 @@ export function HistoryScreen({ onBack }: HistoryScreenProps) {
                 }`}
                 onClick={() => setSelectedHistory(history)}
               >
-                {/* 이미지: ChallengeCard와 동일 레이아웃 */}
-                <div className="w-full flex-shrink-0 overflow-hidden rounded-t-xl relative">
+                {/* 이미지: 해상도 무관하게 컨테이너 안에서만 표시 */}
+                <div className="w-full flex-shrink-0 overflow-hidden rounded-t-xl relative aspect-[4/3] bg-forest-100">
                   <img
                     src={getMissionThumbnailUrl(history.challengeId, {
                       difficulty: history.difficulty,
                       isVictory: history.isVictory
                     })}
                     alt=""
-                    className="w-full aspect-[4/3] object-cover bg-forest-100 block"
-                    width={800}
-                    height={597}
+                    className="w-full h-full object-cover object-center block"
                   />
                   <span className="absolute top-2 right-2 text-3xl drop-shadow-lg">
                     {history.isVictory

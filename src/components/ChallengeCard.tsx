@@ -23,14 +23,12 @@ export function ChallengeCard({ challenge, selected, onClick, bestResult }: Chal
           : 'hover:shadow-xl hover:scale-105'
       }`}
     >
-      {/* 이미지: 기록 있으면 해당 메달 이미지, 없으면 동메달 */}
-      <div className="w-full flex-shrink-0 overflow-hidden rounded-t-xl relative">
+      {/* 이미지: 해상도 무관하게 컨테이너 안에서만 표시 (넘침 방지) */}
+      <div className="w-full flex-shrink-0 overflow-hidden rounded-t-xl relative aspect-[4/3] bg-forest-100">
         <img
           src={getMissionThumbnailUrl(challenge.id, bestResult)}
           alt=""
-          className="w-full aspect-[4/3] object-cover bg-forest-100 block"
-          width={800}
-          height={597}
+          className="w-full h-full object-cover object-center block"
         />
         {/* 기록 있을 때 메달 배지 */}
         {bestResult && (

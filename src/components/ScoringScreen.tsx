@@ -116,17 +116,15 @@ export function ScoringScreen({ onGoToHistory: _onGoToHistory }: ScoringScreenPr
         {/* Result Display */}
         {result && (
           <section className="card mb-8 overflow-hidden p-0">
-            {/* 미션 이미지 (결과에 맞는 이미지) */}
-            <div className="w-full overflow-hidden rounded-t-xl">
+            {/* 미션 이미지: 해상도 무관하게 컨테이너 안에서만 표시 */}
+            <div className="w-full overflow-hidden rounded-t-xl aspect-[4/3] bg-forest-100">
               <img
                 src={getMissionThumbnailUrl(challengeId, {
                   difficulty: result.medal || 'bronze',
                   isVictory: result.isVictory
                 })}
                 alt=""
-                className="w-full aspect-[4/3] object-cover bg-forest-100"
-                width={800}
-                height={597}
+                className="w-full h-full object-cover object-center"
               />
             </div>
 

@@ -1,12 +1,7 @@
-import { getFrame } from '../utils/missionResultsSprite'
+import { getFrame, getSpriteMeta } from '../utils/missionResultsSprite'
 
-/** public 폴더에서 직접 서빙 (67MB 스프라이트는 import 시 로딩 이슈 가능) */
+/** public 폴더에서 직접 서빙 (스프라이트 시트) */
 const SPRITE_URL = '/mission_results_sprite.webp'
-
-const FRAME_WIDTH = 800
-const FRAME_HEIGHT = 597
-const SPRITE_WIDTH = 3200
-const SPRITE_HEIGHT = 8955
 
 interface MissionResultThumbnailProps {
   missionId: number
@@ -17,6 +12,7 @@ interface MissionResultThumbnailProps {
   className?: string
 }
 
+/** 아틀라스 해상도에 무관하게 스프라이트에서 한 프레임만 표시 (넘침 방지) */
 export function MissionResultThumbnail({
   missionId,
   medalCode,
@@ -27,10 +23,11 @@ export function MissionResultThumbnail({
   const frame = getFrame(missionId, medalCode)
   if (!frame) return null
 
-  const scaleX = width / FRAME_WIDTH
-  const scaleY = height / FRAME_HEIGHT
-  const bgWidth = SPRITE_WIDTH * scaleX
-  const bgHeight = SPRITE_HEIGHT * scaleY
+  const { width: spriteW, height: spriteH } = getSpriteMeta()
+  const scaleX = width / frame.w
+  const scaleY = height / frame.h
+  const bgWidth = spriteW * scaleX
+  const bgHeight = spriteH * scaleY
   const bgPosX = -frame.x * scaleX
   const bgPosY = -frame.y * scaleY
 
