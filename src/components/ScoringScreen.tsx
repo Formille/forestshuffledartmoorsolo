@@ -16,7 +16,7 @@ interface ScoringScreenProps {
   onGoToHistory?: () => void
 }
 
-export function ScoringScreen({ onGoToHistory }: ScoringScreenProps) {
+export function ScoringScreen({ onGoToHistory: _onGoToHistory }: ScoringScreenProps) {
   const { t, i18n } = useTranslation()
   const lang = i18n.language as 'ko' | 'en'
   const { challengeId, clearGame } = useGameState()

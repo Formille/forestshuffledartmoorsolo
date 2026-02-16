@@ -13,7 +13,6 @@ export function PlayScreen() {
   const {
     currentAutomaCard,
     remainingCards,
-    automaDeck,
     automaDiscard,
     shownCardsSinceShuffle,
     proceedToNextAction,
