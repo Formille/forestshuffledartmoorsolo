@@ -17,6 +17,8 @@ interface GameStore extends GameState {
   setPhase: (phase: GamePhase) => void
 }
 
+const PLAYER_NAME_KEY = 'dartmoor-player-name'
+
 const initialState: GameState & { playerName: string; playDuration: number | null; shownCardsSinceShuffle: number[] } = {
   phase: 'setup',
   challengeId: null,
@@ -27,7 +29,7 @@ const initialState: GameState & { playerName: string; playDuration: number | nul
   round: 1,
   actionHistory: [],
   startTime: null,
-  playerName: '',
+  playerName: localStorage.getItem(PLAYER_NAME_KEY) || '',
   playDuration: null,
   shownCardsSinceShuffle: []
 }
@@ -38,6 +40,7 @@ export const useGameStore = create<GameStore>()(
       ...initialState,
 
       setPlayerName: (name: string) => {
+        localStorage.setItem(PLAYER_NAME_KEY, name)
         set({ playerName: name })
       },
 
@@ -102,7 +105,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       resetGame: () => {
-        const currentPlayerName = get().playerName
+        const currentPlayerName = get().playerName || localStorage.getItem(PLAYER_NAME_KEY) || ''
         set({
           ...initialState,
           startTime: null,
