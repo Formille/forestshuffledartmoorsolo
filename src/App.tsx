@@ -1,11 +1,29 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { FileText } from 'lucide-react'
 import { useGameStore } from './store/gameStore'
 import { SetupScreen } from './components/SetupScreen'
 import { PlayScreen } from './components/PlayScreen'
 import { ScoringScreen } from './components/ScoringScreen'
 import { HistoryScreen } from './components/HistoryScreen'
 import { VerifyScreen } from './components/VerifyScreen'
+
+const BLOG_URL = 'https://blog.naver.com/chan0933'
+
+const Footer = () => (
+  <footer className="flex-shrink-0 py-3 px-4 bg-forest-100 border-t border-forest-200 flex items-center justify-center gap-2 text-forest-600 text-sm">
+    <span>@greenmeeple</span>
+    <a
+      href={BLOG_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="p-1 rounded hover:bg-forest-200 hover:text-forest-800 transition-colors"
+      aria-label="Blog"
+    >
+      <FileText size={18} strokeWidth={2} />
+    </a>
+  </footer>
+)
 
 function App() {
   const { t, i18n } = useTranslation()
@@ -121,6 +139,7 @@ function App() {
         <div className="flex-1 overflow-y-auto">
           <HistoryScreen onBack={() => setShowHistory(false)} />
         </div>
+        <Footer />
       </div>
     )
   }
@@ -132,6 +151,7 @@ function App() {
         <div className="flex-1 overflow-y-auto">
           <VerifyScreen onBack={() => setShowVerify(false)} />
         </div>
+        <Footer />
       </div>
     )
   }
@@ -147,6 +167,7 @@ function App() {
         {phase === 'scoring' && <ScoringScreen onGoToHistory={() => handleNavigate('history')} />}
         {phase === 'finished' && <ScoringScreen onGoToHistory={() => handleNavigate('history')} />}
       </main>
+      <Footer />
     </div>
   )
 }
