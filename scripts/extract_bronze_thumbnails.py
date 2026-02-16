@@ -41,6 +41,14 @@ def main():
 
     atlas = json.loads(ATLAS_PATH.read_text(encoding="utf-8"))
     img = Image.open(SPRITE_PATH).convert("RGBA")  # WebP도 Pillow로 읽기 가능
+    img_w, img_h = img.size
+
+    # 아틀라스 meta는 기준 해상도. 실제 스프라이트 크기가 다르면 좌표 스케일
+    meta = atlas.get("meta", {})
+    meta_w = meta.get("width") or img_w
+    meta_h = meta.get("height") or img_h
+    scale_x = img_w / meta_w
+    scale_y = img_h / meta_h
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -53,8 +61,13 @@ def main():
                 continue
 
             x, y, w, h = frame["x"], frame["y"], frame["w"], frame["h"]
-            crop = img.crop((x, y, x + w, y + h))
-            if (w, h) != (THUMB_WIDTH, THUMB_HEIGHT):
+            # 실제 스프라이트 크기에 맞게 crop 영역 스케일
+            x1 = int(x * scale_x)
+            y1 = int(y * scale_y)
+            x2 = int((x + w) * scale_x)
+            y2 = int((y + h) * scale_y)
+            crop = img.crop((x1, y1, x2, y2))
+            if crop.size != (THUMB_WIDTH, THUMB_HEIGHT):
                 crop = crop.resize((THUMB_WIDTH, THUMB_HEIGHT), Image.Resampling.LANCZOS)
 
             filename = f"{mission_id}.webp" if suffix == "bronze" else f"{mission_id}_{suffix}.webp"
