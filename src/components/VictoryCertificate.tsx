@@ -78,15 +78,15 @@ export function VictoryCertificate({ history, onClose }: VictoryCertificateProps
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="card bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-forest-800">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 sm:p-4">
+      <div className="card bg-white w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-xl">
+        <div className="flex justify-between items-center mb-4 sticky top-0 bg-white pb-2 border-b border-forest-100">
+          <h2 className="text-xl sm:text-2xl font-bold text-forest-800">
             {t('certificate.title')}
           </h2>
           <button
             onClick={onClose}
-            className="text-forest-600 hover:text-forest-800 text-2xl"
+            className="text-forest-600 hover:text-forest-800 text-2xl p-2 -mr-2"
           >
             ×
           </button>
@@ -100,16 +100,16 @@ export function VictoryCertificate({ history, onClose }: VictoryCertificateProps
           />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-3 sm:gap-4 pb-safe">
           <button
             onClick={handleSaveImage}
-            className="btn-secondary flex-1"
+            className="btn-secondary flex-1 text-sm sm:text-base"
           >
             {t('certificate.saveImage')}
           </button>
           <button
             onClick={handleShare}
-            className="btn-primary flex-1"
+            className="btn-primary flex-1 text-sm sm:text-base"
           >
             {t('certificate.share')}
           </button>

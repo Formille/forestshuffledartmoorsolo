@@ -128,18 +128,18 @@ export function ScoringScreen({ onGoToHistory: _onGoToHistory }: ScoringScreenPr
               />
             </div>
 
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className={`flex items-center gap-3 mb-4 ${
                 result.isVictory ? 'text-forest-800' : 'text-moor-800'
               }`}>
-                <span className="text-4xl">
+                <span className="text-3xl sm:text-4xl flex-shrink-0">
                   {result.isVictory ? '🎉' : '😢'}
                 </span>
-                <div>
-                  <h2 className="text-2xl font-bold">
+                <div className="min-w-0">
+                  <h2 className="text-xl sm:text-2xl font-bold">
                     {result.isVictory ? t('scoring.victory') : t('scoring.defeat')}
                   </h2>
-                  <p className="text-lg font-semibold">
+                  <p className="text-base sm:text-lg font-semibold">
                     {result.score}점
                     {result.medal && (
                       <span className="ml-2">
@@ -154,21 +154,21 @@ export function ScoringScreen({ onGoToHistory: _onGoToHistory }: ScoringScreenPr
               </div>
 
               {result.requiredScore && (
-                <p className="text-forest-600 mb-4">
+                <p className="text-forest-600 mb-4 text-sm sm:text-base">
                   {t('scoring.scoreRequired')}: {result.requiredScore}점
                 </p>
               )}
 
-              <div className="flex gap-4">
+              <div className="flex gap-3 sm:gap-4">
                 <button
                   onClick={() => setShowCertificate(true)}
-                  className="btn-primary flex-1"
+                  className="btn-primary flex-1 text-sm sm:text-base"
                 >
                   {t('certificate.title')}
                 </button>
                 <button
                   onClick={handleNewGame}
-                  className="btn-secondary flex-1"
+                  className="btn-secondary flex-1 text-sm sm:text-base"
                 >
                   {t('setup.title')}
                 </button>

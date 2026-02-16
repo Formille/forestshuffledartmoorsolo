@@ -48,74 +48,69 @@ function App() {
     }
   }
 
+  const navBtnBase = 'px-3 py-1.5 sm:px-4 sm:py-2 rounded transition-colors text-sm sm:text-base'
+  const navBtnActive = `${navBtnBase} bg-forest-500`
+  const navBtnInactive = `${navBtnBase} bg-forest-600 hover:bg-forest-500`
+
+  const isActive = (target: string) => {
+    if (target === 'history') return showHistory
+    if (target === 'verify') return showVerify
+    if (target === 'play') return !showHistory && !showVerify && phase === 'playing'
+    if (target === 'scoring') return !showHistory && !showVerify && (phase === 'scoring' || phase === 'finished')
+    if (target === 'setup') return !showHistory && !showVerify && phase === 'setup'
+    return false
+  }
+
+  const renderNav = () => (
+    <nav className="flex-shrink-0 z-50 bg-forest-700 text-white px-3 py-2 sm:p-4">
+      <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-base sm:text-xl font-bold whitespace-nowrap">
+          Forest Shuffle: Dartmoor
+        </h1>
+        <div className="flex gap-1.5 sm:gap-2 flex-wrap">
+          <button
+            onClick={() => handleNavigate('setup')}
+            className={isActive('setup') ? navBtnActive : navBtnInactive}
+          >
+            {t('nav.setup')}
+          </button>
+          {phase !== 'setup' && phase !== 'finished' && !showHistory && !showVerify && (
+            <button
+              onClick={() => handleNavigate('play')}
+              className={isActive('play') ? navBtnActive : navBtnInactive}
+            >
+              {t('nav.play')}
+            </button>
+          )}
+          {phase !== 'setup' && !showHistory && !showVerify && (
+            <button
+              onClick={() => handleNavigate('scoring')}
+              className={isActive('scoring') ? navBtnActive : navBtnInactive}
+            >
+              {t('nav.scoring')}
+            </button>
+          )}
+          <button
+            onClick={() => handleNavigate('history')}
+            className={isActive('history') ? navBtnActive : navBtnInactive}
+          >
+            {t('nav.history')}
+          </button>
+          <button
+            onClick={() => handleNavigate('verify')}
+            className={isActive('verify') ? navBtnActive : navBtnInactive}
+          >
+            {t('nav.verify')}
+          </button>
+        </div>
+      </div>
+    </nav>
+  )
+
   if (showHistory) {
     return (
       <div className="h-screen flex flex-col bg-forest-50 overflow-hidden">
-        {/* Navigation */}
-        <nav className="flex-shrink-0 z-50 bg-forest-700 text-white p-4">
-          <div className="max-w-6xl mx-auto flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold">Forest Shuffle: Dartmoor</h1>
-              {playerName && (
-                <span className="text-forest-200 text-sm border-l border-forest-500 pl-4">
-                  {playerName}
-                </span>
-              )}
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              <button
-                onClick={() => handleNavigate('setup')}
-                className={`px-4 py-2 rounded transition-colors ${
-                  showHistory && phase === 'setup'
-                    ? 'bg-forest-500'
-                    : 'bg-forest-600 hover:bg-forest-500'
-                }`}
-              >
-                {t('nav.setup')}
-              </button>
-              {phase !== 'setup' && phase !== 'finished' && (
-                <button
-                  onClick={() => handleNavigate('play')}
-                  className={`px-4 py-2 rounded transition-colors ${
-                    phase === 'playing'
-                      ? 'bg-forest-500'
-                      : 'bg-forest-600 hover:bg-forest-500'
-                  }`}
-                >
-                  {t('nav.play')}
-                </button>
-              )}
-              {phase !== 'setup' && (
-                <button
-                  onClick={() => handleNavigate('scoring')}
-                  className={`px-4 py-2 rounded transition-colors ${
-                    phase === 'scoring' || phase === 'finished'
-                      ? 'bg-forest-500'
-                      : 'bg-forest-600 hover:bg-forest-500'
-                  }`}
-                >
-                  {t('nav.scoring')}
-                </button>
-              )}
-              <button
-                onClick={() => handleNavigate('history')}
-                className={`px-4 py-2 rounded transition-colors ${
-                  showHistory
-                    ? 'bg-forest-500'
-                    : 'bg-forest-600 hover:bg-forest-500'
-                }`}
-              >
-                {t('nav.history')}
-              </button>
-              <button
-                onClick={() => handleNavigate('verify')}
-                className="bg-forest-600 hover:bg-forest-500 px-4 py-2 rounded transition-colors"
-              >
-                {t('nav.verify')}
-              </button>
-            </div>
-          </div>
-        </nav>
+        {renderNav()}
         <div className="flex-1 overflow-y-auto">
           <HistoryScreen onBack={() => setShowHistory(false)} />
         </div>
@@ -126,38 +121,7 @@ function App() {
   if (showVerify) {
     return (
       <div className="h-screen flex flex-col bg-forest-50 overflow-hidden">
-        <nav className="flex-shrink-0 z-50 bg-forest-700 text-white p-4">
-          <div className="max-w-6xl mx-auto flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold">Forest Shuffle: Dartmoor</h1>
-              {playerName && (
-                <span className="text-forest-200 text-sm border-l border-forest-500 pl-4">
-                  {playerName}
-                </span>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleNavigate('setup')}
-                className="bg-forest-600 hover:bg-forest-500 px-4 py-2 rounded transition-colors"
-              >
-                {t('nav.setup')}
-              </button>
-              <button
-                onClick={() => handleNavigate('history')}
-                className="bg-forest-600 hover:bg-forest-500 px-4 py-2 rounded transition-colors"
-              >
-                {t('nav.history')}
-              </button>
-              <button
-                onClick={() => handleNavigate('verify')}
-                className="bg-forest-500 px-4 py-2 rounded transition-colors"
-              >
-                {t('nav.verify')}
-              </button>
-            </div>
-          </div>
-        </nav>
+        {renderNav()}
         <div className="flex-1 overflow-y-auto">
           <VerifyScreen onBack={() => setShowVerify(false)} />
         </div>
@@ -167,71 +131,7 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col bg-forest-50 overflow-hidden">
-      {/* Navigation */}
-      <nav className="flex-shrink-0 z-50 bg-forest-700 text-white p-4">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold">Forest Shuffle: Dartmoor</h1>
-            {playerName && (
-              <span className="text-forest-200 text-sm border-l border-forest-500 pl-4">
-                {playerName}
-              </span>
-            )}
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleNavigate('setup')}
-              className={`px-4 py-2 rounded transition-colors ${
-                phase === 'setup'
-                  ? 'bg-forest-500'
-                  : 'bg-forest-600 hover:bg-forest-500'
-              }`}
-            >
-              {t('nav.setup')}
-            </button>
-            {phase !== 'setup' && phase !== 'finished' && (
-              <button
-                onClick={() => handleNavigate('play')}
-                className={`px-4 py-2 rounded transition-colors ${
-                  phase === 'playing'
-                    ? 'bg-forest-500'
-                    : 'bg-forest-600 hover:bg-forest-500'
-                }`}
-              >
-                {t('nav.play')}
-              </button>
-            )}
-            {phase !== 'setup' && (
-              <button
-                onClick={() => handleNavigate('scoring')}
-                className={`px-4 py-2 rounded transition-colors ${
-                  phase === 'scoring' || phase === 'finished'
-                    ? 'bg-forest-500'
-                    : 'bg-forest-600 hover:bg-forest-500'
-                }`}
-              >
-                {t('nav.scoring')}
-              </button>
-            )}
-            <button
-              onClick={() => handleNavigate('history')}
-              className={`px-4 py-2 rounded transition-colors ${
-                showHistory
-                  ? 'bg-forest-500'
-                  : 'bg-forest-600 hover:bg-forest-500'
-              }`}
-            >
-              {t('nav.history')}
-            </button>
-            <button
-              onClick={() => handleNavigate('verify')}
-              className="bg-forest-600 hover:bg-forest-500 px-4 py-2 rounded transition-colors"
-            >
-              {t('nav.verify')}
-            </button>
-          </div>
-        </div>
-      </nav>
+      {renderNav()}
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">

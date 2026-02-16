@@ -51,12 +51,12 @@ export function SetupScreen() {
     <div className="min-h-screen bg-forest-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-wrap justify-between items-start gap-2 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-forest-800 mb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-forest-800 mb-1 sm:mb-2">
               {t('setup.title')}
             </h1>
-            <p className="text-forest-600">{t('app.subtitle')}</p>
+            <p className="text-sm sm:text-base text-forest-600">{t('app.subtitle')}</p>
           </div>
           <LanguageSwitcher />
         </div>
